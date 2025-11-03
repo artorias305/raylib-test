@@ -29,7 +29,8 @@ int main()
 	float centerY = (float)HEIGHT / 2;
 	struct Circle circle = { centerX, centerY, 50.0f, RED };
 	float velocityY = 0.0f;
-	float gravity = 500.0f; // pixels per second^2
+	float velocityX = 0.0f;
+	float gravity = 727.0f; // pixels per second^2
 	float damping = 0.8f; // energy kept after each bounce
 	while (!WindowShouldClose()) {
 		float dt = GetFrameTime();
@@ -54,6 +55,22 @@ int main()
 			circle.centerY = circle.radius;
 			velocityY *= -damping;
 		}
+		if (circle.centerX + circle.radius > WIDTH) {
+			circle.centerX = WIDTH - circle.radius;
+		}
+		if (circle.centerX - circle.radius < 0) {
+			circle.centerX = circle.radius;
+		}
+
+		if (IsKeyPressed(KEY_SPACE)) {
+			velocityY -= 300.0f;
+		}
+		float velocityX = 500.0f; // pixels per second
+
+		if (IsKeyDown(KEY_D))
+			circle.centerX += velocityX * dt;
+		if (IsKeyDown(KEY_A))
+			circle.centerX -= velocityX * dt;
 
 		BeginDrawing();
 		ClearBackground(BLACK);
