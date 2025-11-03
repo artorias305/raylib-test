@@ -22,6 +22,35 @@ void updatePos(struct Circle *circle, float newPosX, float newPosY)
 	circle->centerY = newPosY;
 }
 
+void handleMovement(struct Circle *circle, float velocityY, float dt,
+		    float damping)
+{
+	if (circle->centerY + circle->radius > HEIGHT) {
+		circle->centerY = HEIGHT - circle->radius;
+		velocityY *= -damping;
+	}
+	if (circle->centerY - circle->radius < 0) {
+		circle->centerY = circle->radius;
+		velocityY *= -damping;
+	}
+	if (circle->centerX + circle->radius > WIDTH) {
+		circle->centerX = WIDTH - circle->radius;
+	}
+	if (circle->centerX - circle->radius < 0) {
+		circle->centerX = circle->radius;
+	}
+
+	if (IsKeyPressed(KEY_SPACE)) {
+		velocityY -= 300.0f;
+	}
+	float velocityX = 500.0f; // pixels per second
+
+	if (IsKeyDown(KEY_D))
+		circle->centerX += velocityX * dt;
+	if (IsKeyDown(KEY_A))
+		circle->centerX -= velocityX * dt;
+}
+
 int main()
 {
 	InitWindow(WIDTH, HEIGHT, "ur mom");
@@ -47,30 +76,7 @@ int main()
 				velocityY *= -damping;
 		}
 
-		if (circle.centerY + circle.radius > HEIGHT) {
-			circle.centerY = HEIGHT - circle.radius;
-			velocityY *= -damping;
-		}
-		if (circle.centerY - circle.radius < 0) {
-			circle.centerY = circle.radius;
-			velocityY *= -damping;
-		}
-		if (circle.centerX + circle.radius > WIDTH) {
-			circle.centerX = WIDTH - circle.radius;
-		}
-		if (circle.centerX - circle.radius < 0) {
-			circle.centerX = circle.radius;
-		}
-
-		if (IsKeyPressed(KEY_SPACE)) {
-			velocityY -= 300.0f;
-		}
-		float velocityX = 500.0f; // pixels per second
-
-		if (IsKeyDown(KEY_D))
-			circle.centerX += velocityX * dt;
-		if (IsKeyDown(KEY_A))
-			circle.centerX -= velocityX * dt;
+		handleMovement(&circle, velocityY, dt, damping);
 
 		BeginDrawing();
 		ClearBackground(BLACK);
