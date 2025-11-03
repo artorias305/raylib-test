@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 #include <raylib.h>
 
 #define WIDTH 800
@@ -10,18 +11,53 @@ struct Circle {
 	Color color;
 };
 
-void drawCircle(struct Circle circle) {
+void drawCircle(struct Circle circle)
+{
 	DrawCircle(circle.centerX, circle.centerY, circle.radius, circle.color);
+}
+
+void updatePos(struct Circle *circle, float newPosX, float newPosY)
+{
+	circle->centerX = newPosX;
+	circle->centerY = newPosY;
 }
 
 int main()
 {
 	InitWindow(WIDTH, HEIGHT, "ur mom");
-	struct Circle circ = {(float)WIDTH / 2, (float)HEIGHT / 2, 50.0f, RED};
+	float centerX = (float)WIDTH / 2;
+	float centerY = (float)HEIGHT / 2;
+	struct Circle circle = { centerX, centerY, 50.0f, RED };
+	float velocityY = 0.0f;
+	float gravity = 500.0f; // pixels per second^2
+	float damping = 0.8f; // energy kept after each bounce
 	while (!WindowShouldClose()) {
+		float dt = GetFrameTime();
+
+		velocityY += dt * gravity;
+		circle.centerY += velocityY * dt;
+		// bounce off the floor and ceiling
+		if (circle.centerY + circle.radius >= HEIGHT) {
+			circle.centerY = HEIGHT - circle.radius;
+
+			if (fabs(velocityY) < 10.0f) // small threshold
+				velocityY = 0;
+			else
+				velocityY *= -damping;
+		}
+
+		if (circle.centerY + circle.radius > HEIGHT) {
+			circle.centerY = HEIGHT - circle.radius;
+			velocityY *= -damping;
+		}
+		if (circle.centerY - circle.radius < 0) {
+			circle.centerY = circle.radius;
+			velocityY *= -damping;
+		}
+
 		BeginDrawing();
 		ClearBackground(BLACK);
-		drawCircle(circ);
+		drawCircle(circle);
 		EndDrawing();
 	}
 	return 0;
