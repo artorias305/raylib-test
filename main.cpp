@@ -1,8 +1,11 @@
 #include <raylib.h>
 #include <vector>
+#include <cmath>
 
 #define WIDTH 800
 #define HEIGHT 600
+
+const float G = 6.6 * pow(10, -11);
 
 class Object {
     public:
@@ -33,13 +36,14 @@ class Object {
 	}
 	void Draw()
 	{
-		DrawCircle(this->position[0], this->position[1], this->radius, RAYWHITE);
+		DrawCircle(this->position[0], this->position[1], this->radius,
+			   RAYWHITE);
 	}
 };
 
 int main()
 {
-	InitWindow(WIDTH, HEIGHT, "a");
+	InitWindow(WIDTH, HEIGHT, "ur mom");
 	SetTargetFPS(60);
 
 	float centerX = WIDTH / 2.0f;
@@ -47,21 +51,43 @@ int main()
 	float radius = 50.0f;
 
 	std::vector<Object> objs = {
-		Object(std::vector<float>{200.0f, 300.0f}, std::vector<float>{0.0f, 0.0f}, 0),
-		Object(std::vector<float>{700.0f, 300.0f}, std::vector<float>{0.0f, 0.0f}, 0)
+		Object(std::vector<float>{ 200.0f, 300.0f },
+		       std::vector<float>{ 0.0f, 1500.0f }, 7.35 * pow(10, 22)),
+		Object(std::vector<float>{ 700.0f, 300.0f },
+		       std::vector<float>{ 0.0f, -1500.0f }, 7.35 * pow(10, 22))
 	};
 
 	while (!WindowShouldClose()) {
 		BeginDrawing();
 		ClearBackground(BLACK);
-		for (auto& obj : objs) {
-			obj.accelerate(5.0f, 9.81);
+		for (auto &obj : objs) {
+			for (auto &obj2 : objs) {
+				if (&obj2 == &obj)
+					continue;
+				float dx = obj2.position[0] - obj.position[0];
+				float dy = obj2.position[1] - obj.position[1];
+				float distance = sqrt(dx * dx + dy * dy);
+				std::vector<float> direction = {
+					dx / distance, dy / distance
+				};
+				distance *= 1000;
+
+				float Gforce = (G * obj.mass * obj2.mass) /
+					       (distance * distance);
+				float acc1 = Gforce / obj.mass;
+				std::vector<float> acc = {
+					acc1 * direction[0], acc1 * direction[1]
+				};
+				obj.accelerate(acc[0], acc[1]);
+			}
 			obj.updatePos();
 			obj.Draw();
-			if (obj.position[1] - radius < 0 || obj.position[1] + radius > HEIGHT) {
+			if (obj.position[1] - radius < 0 ||
+			    obj.position[1] + radius > HEIGHT) {
 				obj.velocity[1] *= -0.95;
 			}
-			if (obj.position[0] - obj.radius < 0 || obj.position[0] + obj.radius > WIDTH) {
+			if (obj.position[0] - obj.radius < 0 ||
+			    obj.position[0] + obj.radius > WIDTH) {
 				obj.velocity[0] *= -0.95;
 			}
 		}
