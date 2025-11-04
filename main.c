@@ -22,16 +22,16 @@ void updatePos(struct Circle *circle, float newPosX, float newPosY)
 	circle->centerY = newPosY;
 }
 
-void handleMovement(struct Circle *circle, float velocityY, float dt,
+void handleMovement(struct Circle *circle, float *velocityY, float dt,
 		    float damping)
 {
 	if (circle->centerY + circle->radius > HEIGHT) {
 		circle->centerY = HEIGHT - circle->radius;
-		velocityY *= -damping;
+		*velocityY *= -damping;
 	}
 	if (circle->centerY - circle->radius < 0) {
 		circle->centerY = circle->radius;
-		velocityY *= -damping;
+		*velocityY *= -damping;
 	}
 	if (circle->centerX + circle->radius > WIDTH) {
 		circle->centerX = WIDTH - circle->radius;
@@ -41,7 +41,7 @@ void handleMovement(struct Circle *circle, float velocityY, float dt,
 	}
 
 	if (IsKeyPressed(KEY_SPACE)) {
-		velocityY -= 300.0f;
+		*velocityY -= 300.0f;
 	}
 	float velocityX = 500.0f; // pixels per second
 
@@ -76,7 +76,7 @@ int main()
 				velocityY *= -damping;
 		}
 
-		handleMovement(&circle, velocityY, dt, damping);
+		handleMovement(&circle, &velocityY, dt, damping);
 
 		BeginDrawing();
 		ClearBackground(BLACK);
