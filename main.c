@@ -76,6 +76,7 @@ void updateCircle(struct Circle *circle, float *velocityY, float dt,
 int main()
 {
 	InitWindow(WIDTH, HEIGHT, "ur mom");
+	SetTargetFPS(60);
 	float centerX = (float)WIDTH / 2;
 	float centerY = (float)HEIGHT / 2;
 	struct Circle circle = { centerX, centerY, 50.0f, RED };
@@ -85,6 +86,7 @@ int main()
 	float gravity = 727.0f; // pixels per second^2
 	float damping = 0.8f; // energy kept after each bounce
 	while (!WindowShouldClose()) {
+		DrawFPS(0, 0);
 		float dt = GetFrameTime();
 
 		if (IsKeyPressed(KEY_SPACE)) {
